@@ -25,6 +25,23 @@ function createUser(inputEmail) {
     saveUsers();
 }
 
+function isValid(inputEmail) {
+    const regex = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,10})$/;
+    if(inputEmail.value.match(regex) != null) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function validateEmail() {
+    let submitLogin = document.getElementById('submitLogin');
+    let inputEmail = document.getElementById('inputEmail');
+
+    let validEmail = isValid(inputEmail);
+    submitLogin.disabled = !validEmail;
+}
+
 function login(inputEmail) {
     let user = users.find((element) => element.email == inputEmail);
     if(!!user){
@@ -80,15 +97,18 @@ function logoutPageDOM() {
 function loginPageDOM() {
     let root = document.getElementById('root');
     root.innerHTML = `
-    <form>
+    <form name="form">
         <label for="email" id="labelEmail"></label>
-        <input type="email" name="email" id="inputEmail" required>
-        <input type="submit" value="Login" id="submitLogin">
+        <input type="email" name="email" id="inputEmail" required oninput="validateEmail()">
+        <input type="submit" value="Login" id="submitLogin" onclick="isValid(document.form.email)" disabled>
     </form>`;
+    let inputEmail = document.getElementById('inputEmail');
+    inputEmail.addEventListener('input', () => {
+        validateEmail();
+    })
     document.getElementById('submitLogin').addEventListener('click', (event) => {
         event.preventDefault();
-        let inputEmail = document.getElementById('inputEmail').value;
-        login(inputEmail);
+        login(inputEmail.value);
         logoutPageDOM();
     });
 }
